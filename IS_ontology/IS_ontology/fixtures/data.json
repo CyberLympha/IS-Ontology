@@ -1,0 +1,15 @@
+[
+{
+  "model": "accounts.account",
+  "fields": {
+    "name": "Петров Иван Сергеевич",
+  }
+  }
+},
+{
+  "model": "accounts.account",
+  "fields": {
+    "name": "Kazitsky Jason",
+  }
+}
+]

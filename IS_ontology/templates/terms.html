@@ -1,0 +1,8 @@
+{% extends "main.html" %}
+{% block content %}
+	<h1>Список терминов информационной безопасности</h1>
+	<div hx-get="{% url 'components:filter' %}" hx-swap="innerHTML" hx-trigger="load"></div>
+	<div hx-vals='{{filter}}' hx-post="/terms/table" hx-swap="innerHTML" hx-trigger="load"></div>
+
+{% endblock %}
+

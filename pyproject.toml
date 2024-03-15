@@ -1,0 +1,37 @@
+[tool.poetry]
+name = "is-ontology"
+version = "0.1.0"
+description = ""
+authors = ["Бредихин Борис Андреевич <bbredikhin@ussc.ru>"]
+readme = "README.md"
+packages = [{include = "is_ontology"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.11"
+beautifulsoup4 = "^4.12.2"
+Django = "^4.2.2"
+gunicorn = "^20.1.0"
+djangorestframework = "^3.14.0"
+django-bootstrap4 = "^23.1"
+requests = "^2.31.0"
+neo4j = "^5.9.0"
+nltk = "^3.8.1"
+pymorphy2 = "^0.9.1"
+sklearn-crfsuite = "^0.3.6"
+psycopg2-binary = "^2.9.6"
+django-htmx = "^1.15.0"
+tensorflow-io-gcs-filesystem = "~0.31.0"
+tensorflow = "^2.13.0"
+keras-preprocessing = "^1.1.2"
+pyyaml = "^6.0.1"
+uritemplate = "^4.1.1"
+djangorestframework-simplejwt = {extras = ["crypto"], version = "^5.2.2"}
+django-cors-headers = "^4.2.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+django-debug-toolbar = "^4.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,31 @@
+{% extends "main.html" %}        
+
+{% block content %}
+{% if request.user.is_authenticated %}
+<h1>Классификатор статей</h1>
+        <div class="container">
+            <form method="post" class="form center">
+                {% csrf_token %}
+                <textarea class="request_url" name="request_url" placeholder="Cсылка на статью"></textarea>
+                <input type="submit" name="classify" value="Отправить">
+            </form>
+            <div class="type_info center">
+                Тип статьи: {{ request_type }}
+            </div>
+            {% if show %}
+            <h1>Добавить статью в базу</h1>
+            <form method="post" class="form center">
+                {% csrf_token %}
+                <textarea class="request_des" name="request_description" placeholder="Описание статьи"></textarea>
+                <input type="submit" name="add_to_base" value="Добавить">
+            </form>
+            <div class="type_info center">
+                {% if show_verdict %}
+                <p>{{ verdict }}, {{ description }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+{% endif %}
+
+{% endblock %}

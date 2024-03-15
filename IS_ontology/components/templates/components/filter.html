@@ -1,0 +1,22 @@
+<form method="POST">
+    {% csrf_token %}
+<div class="side-by-side">
+    <div>
+        Пользователь: 
+        <div class="multi-select">
+            {%for user in users%}
+            <label><input type="checkbox" name="user[]" value={{user.pk}} id="u{{user.pk}}">{{user.username}}</label>
+            {%endfor%}
+        </div>
+    </div>
+    <div>
+        Документ: 
+        <div class="multi-select">
+        {%for source in sources%}
+        <label><input type="checkbox" name="source[]" value={{source.url}} id="s{{source.url}}">{{source.desc}}</label>
+        {%endfor%}
+        </div>
+    </div>
+</div>
+<input type="submit" value="Применить">
+</form>

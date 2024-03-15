@@ -1,0 +1,16 @@
+<table cellpadding=10 border=1>
+    <tr>
+        <th>Термин<br><button>По возрастанию</button><br><button>По убыванию</button></th>
+        <th>Документ<br><button>По возрастанию</button><br><button>По убыванию</button></th>
+        <th>Эксперт<br><button>По возрастанию</button><br><button>По убыванию</button></th>
+        <th>Дата добавления<br><button>По возрастанию</button><br><button>По убыванию</button></th>
+    </tr>
+    {% for t in terms %}
+    <tr>
+        <td>{{ t.term}}</td>
+        <td><a href="{{ t.doc.url }}">{{ t.doc.desc }}</a></td>
+        <td>{{ t.expert }}</td>
+        <td>{{ t.date|date }}</td>
+    </tr>
+    {% endfor %}
+</table>

@@ -1,0 +1,56 @@
+﻿{% extends "base.html" %}
+{% block title %}
+Добро пожаловать на страницу проекта "Вече"!
+{% endblock %}
+
+{% block info %}
+<div id="info"></div>
+{% endblock %}
+
+{% block content %}
+    <h1>
+	Рабочая группа проекта "Вече"	
+    </h1>
+    <p>
+	Вы можете внести новый триплет "Объект"-"Предикат"-"Субъект" и просмотреть уже внесенные.
+    </p>
+    <p>
+        Для каждого триплета можно задать статус private (будет видеть только автор) и public (виден всем). 
+    </p>
+    <p>
+      <a href="#dashboards">Всякие прикольные дашборды</a>
+    </p>
+    <p>
+      <a href="#info">Информация о проекте</a>
+    </p>
+    <p>
+      <a href="#quest">Опрос</a>
+    </p>
+    <p>
+      <a href="#news">Новости</a>
+    </p>
+
+
+
+{% endblock %}
+
+{% block navigate %}
+	{% if request.user.is_authenticated %}
+                <p>
+		        Здравствуйте {{ request.user.first_name }}!
+                </p>
+                <p>
+		        Вы можете просмотреть сохраненные триплеты <a href="{% url "Notes:notes_list" %}"> здесь </a>.
+                </p>
+                <p>
+		        Или Вы можете <a href="{% url "logout" %}"> выйти </a>.
+                </p>
+	{% else %}    
+                <p>
+                    Вход в систему <a href="{% url "login" %}">здесь</a> (для целей тестирования - login: <b>test</b>, password: <b>t1e2s3t4</b>).
+                </p>
+                <p>
+                Зарегистрировать новый аккаунт <a href="{% url "register" %}">здесь</a>.
+                </p>
+	{% endif %}
+{% endblock %}

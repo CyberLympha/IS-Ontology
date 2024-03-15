@@ -1,0 +1,16 @@
+body{
+    margin: 0;
+}
+
+p {
+    margin-top: 01rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.main-menu li {
+    padding: 8px !important;
+}
+
+.main-menu li>div{
+    padding: 0;
+}

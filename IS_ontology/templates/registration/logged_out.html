@@ -1,0 +1,16 @@
+﻿{% extends "main.html" %}
+
+{% block title %}Выход из системы{% endblock %}
+
+{% block content %}
+    <h1>Выход из системы</h1>
+    <p>
+        Вы успешно вышли из системы.
+    </p>
+    <p>
+        Вы можете <a href="{% url 'login' %}">повторно зайти в систему</a>.
+    </p>
+    <p>
+        Переход на <a href="{% url 'Notes:main' %}">Главную страницу</a>.
+    </p>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% load bootstrap4 %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>{% block title %}Главная{% endblock %}Доска объявлений</title>
+	{% bootstrap_css %}
+	<link rel="stylesheet" type="text/css" href="{% static '../static/css/main.css' %}">
+	{% bootstrap_javascript jquery='slim' %}
+    <script src="{% static "js/htmx.min.js" %}"></script>
+	<style>
+		#viz {
+             width: 800px;
+             height: 700px;
+        }
+	</style>
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'  class="container-fluid">
+	<header class="mb-4">
+		<hl class="display-1 text-center"></hl>
+	</header>
+
+<div class="row">
+	<ul class="col nav justify-content-end border">
+		{% if request.user.is_authenticated %}
+		Приветствуем, {{ request.user.username }}!
+		{% endif %}
+
+
+
+		<li class="nav-item">
+			<a class="nav-link" href="{% url 'register' %}">Регистрация</a>
+		</li>
+	
+		{% if request.user.is_authenticated %}
+			<li class="nav-item">
+				<a class="nav-link" href="{% url 'logout' %}">Bыxoд</a>
+			</li>
+		{% else %}
+			<li class="nav-item">
+				<a class="nav-link" href="{% url 'login' %}">Bxoд</a>
+			</li>
+		{% endif %}
+	</ul>
+</div>
+
+<div class="row">
+	<nav class="col-md-auto nav flex-column border">
+		<a class="nav-link root" href="{% url 'Notes:main' %}">Главная</a>
+		<span class="nav-link root font-weight-bold dropdown">Законодательство</span>
+		<a class="nav-link root" href="{% url 'Notes:fz' %}">Федеральные законы</a>
+		<a class="nav-link root" href="{% url 'Notes:pp' %}">Постановления правительства</a>
+		<a class="nav-link root" href="{% url 'Notes:fstek' %}">Приказы ФСТЭК</a>
+		{% if request.user.is_authenticated %}
+		<span class="nav-link root font-weight-bold" href="#">Словарь</span>
+		<a class="nav-link root" href="/next/terms">Термины</a>
+		<a class="nav-link root" href="{% url 'Notes:triplets' %}">Триплеты</a>
+		{% endif %}
+		<span class="nav-link root font-weight-bold" href="#">Документы</span>
+		<span class="nav-link root font-weight-bold" href="#">Отчеты</span>
+		<a class="nav-link" href="{% url 'Notes:rep_2021_jul' %}">Отчет за июль 2021 года </a>
+		<a class="nav-link" href="{% url 'Notes:rep_2021_aug' %}">Отчет за август 2021 года </a>
+
+		{% if request.user.is_authenticated %}
+			<span class="nav-link root font-weight-bold" href="#">Инструменты</span>
+			<a class="nav-link" href="{% url 'Clf:clf' %}">Классификатор статей </a>
+			<a class="nav-link" href="{% url 'Ie:ie' %}">Извлечение сущностей</a>
+		    <a class="nav-link" href="{% url 'Notes:terms_to_vote' %}">Голосование за сущности</a>
+			<a class="nav-link" href="{% url 'Ie:predicates' %}">Предикаты</a>
+			<a class="nav-link" href="{% url 'Ie:add' %}">Построение триплетов</a>
+			<a class="nav-link" href="{% url 'Notes:triples_to_vote' %}">Голосование за триплеты</a>
+			<a class="nav-link" href="{% url 'Ie:graph' %}">Граф знаний</a>
+		{% endif %}
+
+		<span class="nav-link root font-weight-bold" href="#">Состав рабочей группы</span>
+		<a class="nav-link root" href="{% url 'Notes:companies' %}">Компании-участники</a>
+		<a class="nav-link root" href="{% url 'Notes:members' %}">Эксперты</a>
+		<a class="nav-link root" href="{% url 'Notes:expert_rating' %}">Рейтинг экспертов</a>
+		<a class="nav-link root" href="{% url 'Notes:engineer_rating' %}">Рейтинг инженеров</a>
+	</nav>
+<section class="col border py-2">
+{% bootstrap_messages %}
+{% block content %}
+{% endblock %}
+</section>
+</div>
+<footer class="mt-3">
+<p class="text-right font-italic">&copy; ЦК КБ "Энерджинет", 2021 г.</p>
+</footer>
+</body>
+</html>

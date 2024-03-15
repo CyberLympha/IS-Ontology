@@ -1,0 +1,23 @@
+﻿{% extends "main.html" %}
+
+{% block title %}Вход в систему{% endblock %}
+
+{% block content %}
+
+    <h1>Вход в систему</h1>
+    {% if form.errors %}
+        <p>Идентификатор пользователя и пароль не совпадают, попробуйте еще раз.</p>
+    {% else %}
+        <p>Внесите данные для входа в систему</p>
+    {% endif %}
+
+    <div class="login-form">
+        <form action="{% url 'login' %}" method="post">
+            {{ form.as_p }}
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{% url 'Notes:main' %}" />
+            <p><input type="submit" value="Ввод"></p>
+        </form>
+    </div>
+
+{% endblock %}

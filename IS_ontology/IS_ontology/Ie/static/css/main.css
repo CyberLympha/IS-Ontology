@@ -1,0 +1,16 @@
+.multi-select {
+    width: 400px;
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 20vh;
+}
+
+.multi-select label{
+    display: block;
+}
+
+.side-by-side{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+

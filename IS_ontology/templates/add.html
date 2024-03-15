@@ -1,0 +1,75 @@
+{% extends "main.html" %}
+
+{% block content %}
+{% if request.user.is_authenticated %}
+        <h1>Добавить триплеты</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <select name="descriptions" required id="id_desc">
+                    {% for index, description in descriptions %}
+                        <option value="{{ index }}" {% if source and index == source %}selected{%endif%}>{{ description }}</option>
+                    {% endfor %}
+            </select>
+            <input type="submit" name="get_from_base" value="Подтвердить">
+        {% if show %}
+        </form>
+        <form method="POST">
+            {% csrf_token %}
+            <p>Предложение {{ sent_index }} из {{ sent_len }} :</p>
+            <p>{{ sentence }}</p>
+            <p>Cубъект: <select name="sub" required id="id_sub">
+                {% for index, ent in ents %}
+                    <option value="{{ ent }}">{{ ent }}</option>
+                {% endfor %}
+                </select>
+            </p>
+
+            <p>Oбъект: <select name="obj" required id="id_obj">
+                {% for index, ent in ents %}
+                    <option value="{{ ent }}">{{ ent }}</option>
+                {% endfor %}
+                </select>
+            </p>
+
+            <p>Предикат: <select name="pred" required id="id_pred">
+                {% for index, pred in preds %}
+                    <option value="{{ pred }}">{{ pred }}</option>
+                {% endfor %}
+            </select>
+            </p>
+
+            <input type="submit" name="add_triple" value="Добавить триплет">
+        </form>
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="submit" name="next" value="Следующее предложение">
+        </form>
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="submit" name="previous" value="Предыдущее предложение">
+        </form>
+
+        <p>{{ verdict_triple }}</p>
+
+        <table border="1">
+            <tr>
+                <th>Субъект</th>
+                <th>Объект</th>
+                <th>Предикат</th>
+                <th>Пользователь</th>
+            </tr>
+            {% for triple in triples %}
+                <tr>
+                    {% for elem in triple %}
+                        <td>{{ elem }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+{% endif %}
+
+
+{% endblock %}

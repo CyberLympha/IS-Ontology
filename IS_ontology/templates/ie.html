@@ -1,0 +1,74 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+{% if request.user.is_authenticated %}
+<h1>Извлечение информации</h1>
+        <div class="container">
+            <form method="post" class="form center">
+                {% csrf_token %}
+                <p>Выберите статью</p>
+                <select name="descriptions" required id="id_desc">
+                {% for index, description in descriptions %}
+                    <option value="{{ index }}" {% if source and index == source %} selected {% endif %} >{{ description }}</option>
+                {% endfor %}
+                </select>
+                <input type="submit" name="get_from_base" value="Подтвердить">
+            </form>
+            {% if show %}
+            <form method="post" class="form center">
+                {% csrf_token %}
+                <p>Предложение {{ sent_index|add:"1" }} из {{ sent_len }} :</p>
+                <p>{{ sentence }}</p>
+                <div class="type_info center">
+                    <table border="1">
+                        <tr>
+                            <th>Добавить в базу</th>
+                            <th>Сущности информационной безопасности, найденные в предложении</th>
+                        </tr>
+                       {% for i, ent in ents %}
+                            <tr>
+                                <td><input type="checkbox" name="{{ i }}" id="choose"></td>
+                                <td>{{ ent }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <input type="submit" name="add_ents" value="Подтвердить">
+                    <div>{{ verdict }}</div>
+                </div>
+            </form>
+            {%if show_next %}
+            <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="descriptions" value="{{source}}">
+            <input type="submit" name="next" value="Следующее предложение">
+        </form>
+        {% endif%}
+        {%if show_previous%}
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="descriptions" value="{{source}}">
+            <input type="submit" name="previous" value="Предыдущее предложение">
+        </form>
+        {% endif%}
+            {% endif %}
+            {% if show_table %}
+            <table border="1">
+            <tr>
+                <th>Сущность информационной безопасности</th>
+                <th>Пользователь</th>
+            </tr>
+            {% for ent in ents_in_sent %}
+                <tr>
+                    {% for elem in ent %}
+                        <td>{{ elem }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+            {% endif %}
+
+        </div>
+{% endif %}
+
+{% endblock %}

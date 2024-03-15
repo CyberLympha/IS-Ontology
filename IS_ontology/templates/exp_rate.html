@@ -1,0 +1,19 @@
+{% extends "main.html" %}
+{% block content %}
+	<h1>Рейтинг экспертов</h1>
+
+	<table cellpadding=10 border=1>
+		<tr>
+			<th>Эксперт</th>
+			<th>Количество оценок</th>
+			<th>Рейтинг эксперта</th>
+		</tr>
+		{% for user, count, exp_rate in exp_rate %}
+		<tr>
+			<td>{{ user }}</td>
+			<td>{{ count }}</td>
+			<td>{{ exp_rate }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+{% endblock %}

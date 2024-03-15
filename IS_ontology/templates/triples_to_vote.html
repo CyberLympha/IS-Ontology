@@ -1,0 +1,32 @@
+{% extends "main.html" %}
+{% block content %}
+	<h1>Список триплетов информационной безопасности</h1>
+	<form method="post">
+		{% csrf_token %}
+	<table cellpadding=10 border=1>
+		<tr>
+			<th>Субъект</th>
+			<th>Объект</th>
+			<th>Предикат</th>
+			<th>Документ</th>
+			<th>Эксперт</th>
+			<th>Проголосовать за</th>
+			<th>Проголосовать против</th>
+		</tr>
+		{% for sub, obj, pred, source, expert, name_for, name_against in triples %}
+		<tr>
+			<td>{{ sub }}</td>
+			<td>{{ obj }}</td>
+			<td>{{ pred }}</td>
+			<td>{{ source }}</td>
+			<td>{{ expert }}</td>
+			<td><input type="checkbox" name='{{ name_for }}' id="choose"></td>
+			<td><input type="checkbox" name='{{ name_against }}' id="choose"></td>
+		</tr>
+		{% endfor %}
+	</table>
+		<input type="submit" name="commit_votes" value="Подтвердить">
+	</form>
+
+{% endblock %}
+

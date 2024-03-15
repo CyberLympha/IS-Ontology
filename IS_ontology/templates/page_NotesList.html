@@ -1,0 +1,43 @@
+﻿{% extends "base.html" %}
+{% block title %}
+List of your triplets.
+{% endblock %}
+
+{% block info %}
+{% endblock %}
+
+{% block content %}
+<table border=1>
+<tr>
+	<th> Ссылка </th>
+	<th> Триплет </th>
+	<th> Источник </th>
+	<th> Автор </th>
+	<th> Дата публикации </th>
+</tr>
+{% for note in notes %}
+ <tr>
+	 <td> <a href="{{ note.get_absolute_url }}">{{ note.title }}</a> </td>
+         <td> {{ note.obj }} -> {{ note.predicat }} -> {{ note.subj }} </td>
+	 <td> {{ note.source }} </td>
+	 <td> {{ note.author }} </td>
+	 <td> {{ note.publish }} </td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}
+
+{% block navigate %}
+	{% if request.user.is_authenticated %}
+		<p>
+		 Добавить новый триплет <a href="{% url "Notes:input_note" %}">здесь</a>.
+		</p>
+                <p>
+		Для завершения работы нажмите <a href="{% url "logout" %}">выход</a>.
+                </p>
+	{% else %}    
+                <p>
+		Пожалуйста, войдите в систему, <a href="{% url "login" %}">здесь</a>.
+                </p>
+	{% endif %}
+{% endblock %}

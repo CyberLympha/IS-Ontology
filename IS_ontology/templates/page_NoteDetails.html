@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Триплет "{{ note.title }}" от {{ note.publish }}. {% endblock %}
+
+{% block info %}
+{% endblock %}
+
+{% block content %}
+    <h1>{{ note.title }}</h1>
+    <p class="date">Тип: "{{ note.status }}", дата публикации: {{ note.publish }}, автор: {{ note.author }}</p>
+    <p>
+    {{ note.obj }} -> {{ note.predicat }} -> {{ note.subj }}
+    </p>
+{% endblock %}
+
+{% block navigate %}
+	{% if request.user.is_authenticated %}
+                <p>
+		{{ request.user.first_name }}, 
+		Триплет "{{ note.title }}", дата: {{ note.publish }}.
+                </p>
+                <p>
+		Переход к вашему списку триплетов <a href="{% url "Notes:notes_list" %}"> here </a>.
+                </p>
+                <p>
+		Выход: <a href="{% url "logout" %}"> logout </a>.
+                </p>
+	{% else %}    
+                <p>
+		Вход: <a href="{% url "login" %}">log-in</a>.
+                </p>
+	{% endif %}
+{% endblock %}
+

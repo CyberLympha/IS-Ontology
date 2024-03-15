@@ -1,0 +1,28 @@
+﻿{% extends "base.html" %}
+{% block title %} Создание нового триплета {% endblock %}
+
+{% block info %}{% endblock %}
+
+{% block content %}
+	{% if saved %}
+	  <h1>Спасибо!</h1>
+	  <p>Триплет "{{ note.title }}" был успешно сохранен "{{ note.publish }}".</p>
+	{% else %}
+	  <h1>Создание нового триплета</h1>
+	  <p>Пожалуйста, задайте значения нового триплета здесь.</p>
+	  <form method="post">
+	    {% csrf_token %}
+	    {{ form.as_p }}
+	    <input type="submit" value="Сохранить триплет">
+	  </form>
+	{% endif %}
+{% endblock %}
+
+{% block navigate %}
+	{% if request.user.is_authenticated %}
+                <p>Перейти к вашему списку триплетов <a href="{% url "Notes:notes_list" %}">здесь</a>.</p>
+                <p><a href="{% url "logout" %}">Выход</a>.</p>
+	{% else %}    
+                <p><a href="{% url "login" %}">Вход</a>. </p>
+	{% endif %}
+{% endblock %}

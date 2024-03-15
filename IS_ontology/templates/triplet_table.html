@@ -1,0 +1,20 @@
+<table cellpadding=10 border=1>
+    <tr>
+        <th>Субъект</th>
+        <th>Объект</th>
+        <th>Предикат</th>
+        <th>Документ</th>
+        <th>Эксперт</th>
+        <th>Дата добавления</th>
+    </tr>
+    {% for t in triples %}
+    <tr>
+        <td>{{ t.sub }}</td>
+        <td>{{ t.obj }}</td>
+        <td>{{ t.pred }}</td>
+        <td><a href="{{ t.source.url }}">{{ t.source.desc }}</a></td>
+        <td>{{ t.expert }}</td>
+        <td>{{ t.date|date }}</td>
+    </tr>
+    {% endfor %}
+</table>

@@ -1,0 +1,25 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+{% if request.user.is_authenticated %}
+<h1>Найти описание предиката</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <textarea class="request_url" name="pred" placeholder="Введите наименование предиката"></textarea>
+            <input type="submit" name="find_pred" value="Найти предикат">
+        </form>
+        <p>{{ pred_descriptions }}</p>
+
+<h1>Добавить предикат</h1>
+        <p>Не добавляйте новый предикат, пока не убедитесь, что его нет в базе</p>
+        <form method="POST">
+            {% csrf_token %}
+            <textarea class="request_url" name="pred" placeholder="Предикат"></textarea>
+            <textarea class="request_url" name="pred_description" placeholder="Описание предиката"></textarea>
+            <input type="submit" name="add_pred" value="Добавить предикат">
+        </form>
+        <p>{{ verdict_pred }}</p>
+{% endif %}
+
+{% endblock %}

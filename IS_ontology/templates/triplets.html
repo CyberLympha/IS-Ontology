@@ -1,0 +1,7 @@
+{% extends "main.html" %}
+{% block content %}
+	<h1>Список триплетов информационной безопасности</h1>
+	<div hx-get="{% url 'components:filter' %}" hx-swap="innerHTML" hx-trigger="load"></div>
+	<div hx-vals='{{filter}}' hx-post="/triplets/table" hx-swap="innerHTML" hx-trigger="load"></div>
+{% endblock %}
+

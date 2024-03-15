@@ -1,0 +1,74 @@
+version: '3'
+
+services:
+  nginx:
+   build:
+     context: .
+     dockerfile: ./docker/nginx/Dockerfile
+   ports:
+     - 9090:9090
+#      - 7676:7676
+   depends_on:
+     - web
+   volumes:
+     - static_volume:/apps/IS_ontology/static
+  
+  frontend:
+    build:
+      context: is-ontology-frontend-next
+    # ports:
+      # - 3000:3000
+    volumes:
+      - ./is-ontology-frontend-next:/app
+
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/python/Dockerfile
+    # command: gunicorn IS_ontology.wsgi:application --bind 0.0.0.0:9090
+    command: "python3 manage.py runserver 0.0.0.0:9090" # for dev only
+#    ports:
+#      - "9090:9090"
+#      - "5678:5678"
+    env_file:
+      - ./.env.prod
+    depends_on:
+      - db
+      - neo4j
+    volumes:
+      - static_volume:/apps/IS_ontology/static
+      - ./IS_ontology:/apps/IS_ontology
+
+  db:
+    image: postgres:12.0-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.prod
+
+  neo4j:
+    image: neo4j:5.7.0-community
+    expose:
+      - 7474/tcp
+      - 7473
+      - 7687
+    volumes:
+      - neo4j_data_2:/var/lib/neo4j/data
+    tmpfs:
+      - /var/lib/neo4j/run # fix errors if starting container again
+    ports:
+      - "7473:7473"
+      - "7474:7474"
+      - "7687:7687"
+
+    env_file:
+      - ./.env.prod
+
+volumes:
+  postgres_data:
+  neo4j_data_2:
+  static_volume:
+
+

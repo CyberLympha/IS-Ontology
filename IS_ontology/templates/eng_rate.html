@@ -1,0 +1,24 @@
+{% extends "main.html" %}
+{% block content %}
+	<h1>Рейтинг инженеров-онтологов</h1>
+
+	<table cellpadding=10 border=1>
+		<tr>
+			<th>Инженер</th>
+			<th>Количество сущностей</th>
+			<th>Количество триплетов</th>
+			<th>Рейтинг</th>
+		</tr>
+		{% for user, count_ents, count_triples, rating in eng_rate %}
+		<tr>
+			<td>{{ user }}</td>
+			<td>{{ count_ents }}</td>
+			<td>{{ count_triples }}</td>
+			<td>{{ rating }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+
+
+{% endblock %}
+
