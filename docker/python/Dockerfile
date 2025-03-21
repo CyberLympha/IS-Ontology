@@ -14,5 +14,9 @@ COPY ./nltk_data /root/nltk_data
 
 COPY ./IS_ontology /apps/IS_ontology
 
+COPY entrypoint.sh /apps/IS_ontology/entrypoint.sh
+RUN chmod +x /apps/IS_ontology/entrypoint.sh
+
 ENTRYPOINT ["/apps/IS_ontology/entrypoint.sh"]
+CMD ["python3", "manage.py", "runserver", "0.0.0.0:9090"]
 
