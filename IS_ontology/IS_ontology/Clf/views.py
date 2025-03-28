@@ -6,9 +6,9 @@ import requests
 import re
 from bs4 import BeautifulSoup
 import pickle
-# from tensorflow.keras.models import Sequential
-# from tensorflow.keras.layers import Dense, Embedding, LSTM
-# from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Embedding, LSTM
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 from django.conf import settings
 import pickle
 
@@ -21,19 +21,19 @@ tokenizer_path = os.path.join(str(settings.BASE_DIR), "tokenizer.pickle")
 model_path = os.path.join(str(settings.BASE_DIR), "clf_is.h5")
 print(model_path)
 
-# with open(tokenizer_path, "rb") as handle:
-#     tokenizer = pickle.load(handle)
+with open(tokenizer_path, "rb") as handle:
+     tokenizer = pickle.load(handle)
 
 
-# classifier = Sequential()
-# classifier.add(Embedding(20000, 64, input_length=400))
-# classifier.add(LSTM(64))
-# classifier.add(Dense(1, activation="sigmoid"))
-# classifier.compile(
-#     optimizer="adam", loss="binary_crossentropy", metrics=["AUC", "accuracy"]
-# )
+classifier = Sequential()
+classifier.add(Embedding(20000, 64, input_length=400))
+classifier.add(LSTM(64))
+classifier.add(Dense(1, activation="sigmoid"))
+classifier.compile(
+    optimizer="adam", loss="binary_crossentropy", metrics=["AUC", "accuracy"]
+)
 
-# classifier.load_weights(model_path)
+classifier.load_weights(model_path)
 
 last = {}
 
