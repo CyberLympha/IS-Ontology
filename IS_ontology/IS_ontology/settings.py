@@ -30,7 +30,7 @@ ALLOWED_HOSTS = json.loads(os.environ.get("DJANGO_ALLOWED_HOSTS", default="[]"))
 INSTALLED_APPS = [
     "components",
     "IS_ontology.Ie",
-    # "IS_ontology.Clf",
+    "IS_ontology.Clf",
     "IS_ontology.Accounts",
     "IS_ontology.Notes",
     "IS_ontology.api",
