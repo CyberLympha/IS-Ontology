@@ -23,3 +23,12 @@ class Source(models.Model):
         логах и отладке.
         """
         return self.url
+
+    def get_connected_entities(self, sentence: str):
+        """
+        Временный заглушечный метод, возвращает список сущностей, 
+        связанных с данным источником. 
+        Далее Можно заменить на реальную логику.
+        """
+        from .models import Entity
+        return list(Entity.objects.filter(source=self, text__icontains=sentence))
