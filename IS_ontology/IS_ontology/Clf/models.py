@@ -1,4 +1,4 @@
-from django.db import models # type: ignore
+from django.db import models  # type: ignore
 
 # Create your models here.
 
@@ -26,9 +26,10 @@ class Source(models.Model):
 
     def get_connected_entities(self, sentence: str):
         """
-        Временный заглушечный метод, возвращает список сущностей, 
-        связанных с данным источником. 
-        Далее Можно заменить на реальную логику.
+        Временный заглушечный метод. Возвращает список сущностей (Entity),
+        связанных с данным источником и содержащих указанный текст.
+
+        В дальнейшем здесь может быть реализована логика, 
+        связанная с графом знаний.
         """
-        from .models import Entity
-        return list(Entity.objects.filter(source=self, text__icontains=sentence))
+        return list(self.entity_set.filter(text__icontains=sentence))
