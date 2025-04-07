@@ -184,7 +184,7 @@ class TripleRepository:
     @staticmethod
     def create_triple(
         subject: str,
-        source: SourceRepository,
+        source: Source, 
         object: str,
         predicate: str,
         sent: str,

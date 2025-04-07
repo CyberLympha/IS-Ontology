@@ -65,8 +65,9 @@ class IndexView(TemplateView, TemplatePostViewMixin):
 
         sent_index, sents, ents, description = self.last_for_ents[self.request.user]
 
-        source = nm.Source.objects.get(description=description)
-
+        #source = nm.Source.objects.get(description=description)
+        source = gr.SourceRepository.get_by_url(description)
+        
         sent_form = generate_sent_form(sent_index, sents, ents)
         marked_ents = get_marked_ents(sent_index, sents, source)
         ents = filter_ents(marked_ents, sent_form[1])
