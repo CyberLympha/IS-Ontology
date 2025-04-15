@@ -67,7 +67,7 @@ class Entity(models.Model):
 class Predicate(models.Model):
     pred = models.CharField(max_length=200, primary_key=True)
     expert = models.ForeignKey(User, on_delete=models.CASCADE)
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)  # Сделали описание необязательным
     date = models.DateTimeField(auto_now_add=True)
 
     @classmethod
