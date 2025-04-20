@@ -16,10 +16,11 @@ services:
   frontend:
     build:
       context: is-ontology-frontend-next
-    # ports:
-      # - 3000:3000
-    volumes:
-      - ./is-ontology-frontend-next:/app
+    ports:
+      - 3000:3000
+    # volumes:
+    #   - ./is-ontology-frontend-next:/app
+    #   - /app/node_modules  # <-- это защищает node_modules в контейнере
 
   web:
     build:
