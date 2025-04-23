@@ -2,14 +2,13 @@
 {
   "model": "accounts.account",
   "fields": {
-    "name": "Петров Иван Сергеевич",
+    "name": "Петров Иван Сергеевич"
   }
-  }
-},
+  },
 {
   "model": "accounts.account",
   "fields": {
-    "name": "Kazitsky Jason",
+    "name": "Kazitsky Jason"
   }
 }
 ]
