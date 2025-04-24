@@ -124,35 +124,16 @@ class IndexView(TemplateView, TemplatePostViewMixin):
 
     def process_get(self) -> Dict[str, Any]:
         """
-        Обрабатывает GET-запрос для извлечения предложений и сущностей 
-        из последней просмотренной пользователем статьи.
-
-        Проверяет наличие данных о текущем пользователе в кеше (last_for_ents). 
-        Если данные есть, извлекает и подготавливает предложение и сущности 
-        для отображения пользователю. В противном случае возвращает пустой результат.
-
-        Returns:
-            dict: Контекст для отображения страницы с предложением и сущностями.
-                - sentence: Текущее предложение для обработки сущностей.
-                - ents: Перечень сущностей, найденных в предложении.
-                - sent_index: Индекс текущего предложения.
-                - sent_len: Общее число предложений.
-                - ents_in_sent: Сущности, уже помеченные в предложении.
-                - show_table: Флаг отображения таблицы с сущностями.
-                - show: Флаг отображения блока результатов.
+        Обрабатывает GET-запрос к странице извлечения сущностей (IE).
         """
-        # Гарантируем, что user — не ленивый объект, а реальный пользователь
-        user = self.request.user._wrapped if isinstance(self.request.user, SimpleLazyObject) else self.request.user
-
+        user_pk = getattr(self.request.user, 'pk', None)
         result = {"show": True}
 
-        if user.pk not in self.last_for_ents:
+        if not user_pk or user_pk not in self.last_for_ents:
             return result
 
-        sent_index, sents, ents, description = self.last_for_ents[user.pk]
-
+        sent_index, sents, ents, description = self.last_for_ents[user_pk]
         source = gr.SourceRepository.get_by_url(description)
-
         sent_form = generate_sent_form(sent_index, sents, ents)
         marked_ents = get_marked_ents(sent_index, sents, source)
         filtered_ents = filter_ents(marked_ents, sent_form[1])
@@ -167,6 +148,7 @@ class IndexView(TemplateView, TemplatePostViewMixin):
         }
 
         return result
+
 
 
     def process_post(self) -> Dict[str, Any]:
