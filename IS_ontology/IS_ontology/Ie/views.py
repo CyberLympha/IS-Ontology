@@ -476,44 +476,33 @@ class AddView(TemplateView, TemplatePostViewMixin):
         2. Добавление триплета (сущность–предикат–сущность) для текущего предложения.
         3. Переключение между предложениями (вперёд/назад) при аннотировании статьи.
 
-        ВАЖНО:
-        - Метод хранит данные в `self.last_for_triples` и `self.articles`, где ключами выступает `user.pk`,
-        а не объект `user`, чтобы избежать проблем с сериализацией `SimpleLazyObject`.
-        - Все операции выполняются на основе `user.pk` как уникального идентификатора пользователя.
-
         Возвращает:
-            dict: Контекст с результатами обработки для отображения в шаблоне, может включать:
-                - source: описание текущей статьи;
-                - sentence: текущее предложение;
-                - ents: список сущностей;
-                - triples: уже сохранённые триплеты;
-                - sent_index: индекс текущего предложения;
-                - sent_len: общее количество предложений;
-                - verdict_triple: сообщение о добавлении триплета;
-                - show: флаг отображения секции.
+            dict: Контекст с результатами обработки для отображения в шаблоне.
         """
-        # Гарантируем, что user — не ленивый объект, а настоящий пользователь
+        from django.utils.functional import SimpleLazyObject
+
+        # Безопасное извлечение user и его pk
         user = self.request.user._wrapped if isinstance(self.request.user, SimpleLazyObject) else self.request.user
+        user_pk = getattr(user, "pk", None)
+        if user_pk is None:
+            return {"verdict_triple": "Ошибка: пользователь не авторизован."}
+
         result = {}
 
         if "get_from_base" in self.request.POST:
             description = self.request.POST.get("descriptions")
-            self.articles[self.request.user] = description
-            # Ниже очень непонятный код, нужно оптимизировать взаимодействие с БД
+            self.articles[user_pk] = description
 
             source = gr.SourceRepository.get_by_url(description)
-
-            last_url = source.url
-            last_text = get_parsed_html(last_url)
+            last_text = get_parsed_html(source.url)
 
             sents = sent_tokenize(last_text, "russian")
             sent_index = 0
 
             ents_for_article = source.get_connected_entities(sents[sent_index])
-
             ents = list(enumerate(i["e"]["name"] for i in ents_for_article))
 
-            self.last_for_triples[self.request.user] = [
+            self.last_for_triples[user_pk] = [
                 sent_index,
                 sents,
                 ents,
@@ -522,7 +511,7 @@ class AddView(TemplateView, TemplatePostViewMixin):
             sent_form = generate_sent_form(sent_index, sents, ents_for_article)
 
             result |= {
-                "source": self.articles[self.request.user],
+                "source": self.articles[user_pk],
                 "sentence": sent_form[0],
                 "ents": list(enumerate(sent_form[1])),
                 "triples": nm.Triple.get_by_sent(source, sent_form[0]),
@@ -532,9 +521,7 @@ class AddView(TemplateView, TemplatePostViewMixin):
             }
 
         elif "add_triple" in self.request.POST:
-            sent_index, sents, ents, description = self.last_for_triples[
-                self.request.user
-            ]  
+            sent_index, sents, ents, description = self.last_for_triples[user_pk]
             sub = self.request.POST.get("sub")
             obj = self.request.POST.get("obj")
             pred = self.request.POST.get("pred")
@@ -545,26 +532,22 @@ class AddView(TemplateView, TemplatePostViewMixin):
 
             source = gr.SourceRepository.get_by_url(description)
 
-            # Сохраняем триплет и добавляем оценку эксперта
             triple = gr.TripleRepository.create_triple(
-                sub, source, obj, pred, sent, user.pk
+                sub, source, obj, pred, sent, user_pk
             )
             created = True
 
             if created:
-                # Сохраняем экспертную оценку для триплета
                 triple_score = nm.TripleScore(
                     triple=triple, expert=user, score=True
                 )
                 triple_score.save()
-
                 result["verdict_triple"] = "Триплет успешно добавлен"
             else:
                 result["verdict_triple"] = "Триплет уже есть в базе"
 
-
             result |= {
-                "source": self.articles[user],
+                "source": self.articles[user_pk],
                 "show": True,
                 "sentence": sent,
                 "ents": ents,
@@ -574,7 +557,7 @@ class AddView(TemplateView, TemplatePostViewMixin):
             }
 
         elif "next" in self.request.POST or "previous" in self.request.POST:
-            sent_index, sents, ents, description = self.last_for_triples[user]
+            sent_index, sents, ents, description = self.last_for_triples[user_pk]
 
             sent_index += 1 if "next" in self.request.POST else -1
             if sent_index < 0 or sent_index >= len(sents):
@@ -584,11 +567,12 @@ class AddView(TemplateView, TemplatePostViewMixin):
             ents_for_article = source.get_connected_entities(sents[sent_index])
             ents = list(enumerate(i["e"]["name"] for i in ents_for_article))
 
-            self.last_for_triples[self.request.userlf][0] = sent_index
-            self.last_for_triples[self.request.user][2] = ents
+            self.last_for_triples[user_pk][0] = sent_index
+            self.last_for_triples[user_pk][2] = ents
             sent_form = generate_sent_form(sent_index, sents, [e[1] for e in ents])
+
             result |= {
-                "source": self.articles[self.request.user],
+                "source": self.articles[user_pk],
                 "show": True,
                 "sentence": sent_form[0],
                 "ents": ents,
@@ -598,6 +582,7 @@ class AddView(TemplateView, TemplatePostViewMixin):
             }
 
         return result
+
 
 
 class PredicateView(TemplateView, TemplatePostViewMixin):
