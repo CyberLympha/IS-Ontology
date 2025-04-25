@@ -409,13 +409,13 @@ class AddView(TemplateView, TemplatePostViewMixin):
             ],
             "preds": nm.Predicate.get_preds(),
         }
-
-        if self.request.method == "GET":
-            context |= self.process_get()
-        elif self.request.method == "POST":
+        if self.request.method == "POST":
             context |= self.process_post()
 
+        context |= self.process_get()
+
         return context
+    
 
     def process_get(self) -> Dict[str, Any]:
         """
@@ -448,10 +448,11 @@ class AddView(TemplateView, TemplatePostViewMixin):
         user = self.request.user._wrapped if isinstance(self.request.user, SimpleLazyObject) else self.request.user
         result = {}
 
-        if user not in self.last_for_triples.keys():
+        user_pk = getattr(user, "pk", None)
+        if user_pk not in self.last_for_triples:
             return result
 
-        last = self.last_for_triples[self.request.user]
+        last = self.last_for_triples[user_pk]
         ents = [e[1] for e in last[2]]
         sent_form = generate_sent_form(last[0], last[1], ents)
         source = gr.SourceRepository.get_by_url(last[3])
