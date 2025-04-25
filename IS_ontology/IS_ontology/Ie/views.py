@@ -153,48 +153,32 @@ class IndexView(TemplateView, TemplatePostViewMixin):
 
     def process_post(self) -> Dict[str, Any]:
         """
-        Обрабатывает POST-запросы для извлечения сущностей.
-
-        В зависимости от параметров POST-запроса метод может:
-        - Получать текст статьи из базы данных по выбранному описанию.
-        - Добавлять отмеченные сущности в базу данных.
-        - Переключаться между предложениями в статье.
-
-        Returns:
-            dict: Словарь с контекстом для рендера шаблона.
-
-            Содержимое словаря зависит от параметров запроса и включает:
-                - sentence: текущее предложение для анализа.
-                - ents: список сущностей в предложении.
-                - sent_index: индекс текущего предложения.
-                - sent_len: общее количество предложений.
-                - ents_in_sent: уже размеченные сущности.
-                - verdict: сообщение о результате действия пользователя.
-                - show_table: флаг отображения таблицы сущностей.
+        ...
         """
-        # Гарантируем, что user не ленивый объект, а реальный пользователь
-        user = self.request.user._wrapped if isinstance(self.request.user, SimpleLazyObject) else self.request.user
+        print("DEBUG::", type(self.request.user), self.request.user)
+        user = (
+            self.request.user._wrapped
+            if isinstance(self.request.user, SimpleLazyObject)
+            else self.request.user
+        )
+        result: Dict[str, Any] = {"show": True, "show_table": True}
 
-        result = {"show": True, "show_table": True}
-
+        # 1. Пользователь выбрал статью
         if "descriptions" in self.request.POST:
             result["source"] = self.request.POST.get("descriptions")
 
+        # 2. Загрузить статью и предложение №0
         if "get_from_base" in self.request.POST:
             source = gr.SourceRepository.get_by_url(result["source"])
 
             last_text = get_parsed_html(source.url)
             ents = get_ents(source.url, crf)
+
             sent_index = 0
             sents = sent_tokenize(last_text, language="russian")
 
-            # Сохраняем состояние с идентификатором пользователя, а не объектом
-            self.last_for_ents[user.pk] = [
-                sent_index,
-                sents,
-                ents,
-                source.url,
-            ]
+            # Кэшируем состояние по user.pk
+            self.last_for_ents[user.pk] = [sent_index, sents, ents, source.url]
 
             sent_form = generate_sent_form(sent_index, sents, ents)
             marked_ents = get_marked_ents(sent_index, sents, source)
@@ -208,8 +192,11 @@ class IndexView(TemplateView, TemplatePostViewMixin):
                 "ents_in_sent": marked_ents,
             }
 
+        # 3. Добавление отмеченных сущностей
         elif "add_ents" in self.request.POST:
-            # Загружаем сохранённое состояние по идентификатору пользователя
+            if user.pk not in self.last_for_ents:     # защитимся от KeyError
+                return result
+
             sent_index, sents, ents, description = self.last_for_ents[user.pk]
             sent_form = generate_sent_form(sent_index, sents, ents)
 
@@ -218,7 +205,6 @@ class IndexView(TemplateView, TemplatePostViewMixin):
             filtered_ents = filter_ents(marked_ents, sent_form[1])
 
             applyed_ents = [self.request.POST.get(str(i)) for i in range(len(filtered_ents))]
-
             if any(applyed_ents):
                 for i, ae in enumerate(applyed_ents):
                     if ae == "on":
@@ -237,15 +223,19 @@ class IndexView(TemplateView, TemplatePostViewMixin):
                 "ents_in_sent": marked_ents,
             }
 
+        # 4. Переключение предложений
         elif "next" in self.request.POST or "previous" in self.request.POST:
-            # Обработка переключения предложений
+            if user.pk not in self.last_for_ents:
+                return result
+
             sent_index, sents, ents, description = self.last_for_ents[user.pk]
             sent_index += 1 if "next" in self.request.POST else -1
-            if sent_index < 0 or sent_index >= len(sents):
+
+            if not (0 <= sent_index < len(sents)):
                 result["verdict"] = "Вы вышли за пределы предложений."
                 return result
 
-            # Обновляем индекс текущего предложения
+            # сохраняем новый индекс
             self.last_for_ents[user.pk][0] = sent_index
 
             source = gr.SourceRepository.get_by_url(description)
@@ -262,6 +252,7 @@ class IndexView(TemplateView, TemplatePostViewMixin):
             }
 
         return result
+
 
 
 
