@@ -500,6 +500,9 @@ class AddView(TemplateView, TemplatePostViewMixin):
             dict: Контекст с результатами обработки для отображения в шаблоне.
         """
         from django.utils.functional import SimpleLazyObject
+ 
+        print("🔎 DEBUG:: request.POST =", dict(self.request.POST))  #отладочный принт
+        print("DEBUG:: POST keys =", list(self.request.POST.keys())) #отладочный принт  
 
         # Безопасное извлечение user и его pk
         user = self.request.user._wrapped if isinstance(self.request.user, SimpleLazyObject) else self.request.user
@@ -510,6 +513,9 @@ class AddView(TemplateView, TemplatePostViewMixin):
         result = {}
 
         if "get_from_base" in self.request.POST:
+
+            print("Кнопка 'Подтвердить' нажата — get_from_base") #отладочный принт          
+
             description = self.request.POST.get("descriptions")
             self.articles[user_pk] = description
 
