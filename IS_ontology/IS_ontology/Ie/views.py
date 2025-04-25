@@ -402,20 +402,26 @@ class AddView(TemplateView, TemplatePostViewMixin):
             Dict[str, Any]: Словарь с данными, которые будут переданы в шаблон.
         """
         context = super().get_context_data(**kwargs)
-        context |= {
-            "descriptions": [
-                [i["n.url"], i["n.description"]]
-                for i in gr.SourceRepository.get_descriptions()
-            ],
-            "preds": nm.Predicate.get_preds(),
-        }
-        if self.request.method == "POST":
-            context |= self.process_post()
 
-        context |= self.process_get()
+        # descriptions и preds должны быть добавлены в любом случае
+        context["descriptions"] = [
+            [i["n.url"], i["n.description"]]
+            for i in gr.SourceRepository.get_descriptions()
+        ]
+        context["preds"] = nm.Predicate.get_preds()
+
+        # process_post может создать состояние
+        context |= self.process_post()
+
+        # если есть данные для пользователя, добавляем форму
+        user = self.request.user._wrapped if isinstance(self.request.user, SimpleLazyObject) else self.request.user
+        user_pk = getattr(user, "pk", None)
+
+        if user_pk in self.last_for_triples:
+            context |= self.process_get()
 
         return context
-    
+            
 
     def process_get(self) -> Dict[str, Any]:
         """
@@ -444,12 +450,12 @@ class AddView(TemplateView, TemplatePostViewMixin):
                 - show: флаг отображения секции.
                 - triples: существующие триплеты, связанные с этим предложением.
         """
-        # Гарантируем, что user — не ленивый объект, а настоящий пользователь
         user = self.request.user._wrapped if isinstance(self.request.user, SimpleLazyObject) else self.request.user
+        user_pk = getattr(user, "pk", None)
+
         result = {}
 
-        user_pk = getattr(user, "pk", None)
-        if user_pk not in self.last_for_triples:
+        if user_pk is None or user_pk not in self.last_for_triples:
             return result
 
         last = self.last_for_triples[user_pk]
@@ -467,6 +473,7 @@ class AddView(TemplateView, TemplatePostViewMixin):
         }
 
         return result
+
 
     def process_post(self):
         """
@@ -583,7 +590,6 @@ class AddView(TemplateView, TemplatePostViewMixin):
             }
 
         return result
-
 
 
 class PredicateView(TemplateView, TemplatePostViewMixin):
