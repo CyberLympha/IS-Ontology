@@ -456,7 +456,7 @@ class AddView(TemplateView, TemplatePostViewMixin):
         result = {}
 
         if user_pk is None or user_pk not in self.last_for_triples:
-            return result
+            return {"show": False}
 
         last = self.last_for_triples[user_pk]
         ents = [e[1] for e in last[2]]
