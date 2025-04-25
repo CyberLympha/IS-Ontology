@@ -401,23 +401,35 @@ class AddView(TemplateView, TemplatePostViewMixin):
         Возвращает:
             Dict[str, Any]: Словарь с данными, которые будут переданы в шаблон.
         """
+        # базовый контекст из TemplateView
         context = super().get_context_data(**kwargs)
 
-        # descriptions и preds должны быть добавлены в любом случае
+        # + базовые данные, которые нужны всегда
         context["descriptions"] = [
             [i["n.url"], i["n.description"]]
             for i in gr.SourceRepository.get_descriptions()
         ]
         context["preds"] = nm.Predicate.get_preds()
 
-        # process_post может создать состояние
-        context |= self.process_post()
-
-        # если есть данные для пользователя, добавляем форму
-        user = self.request.user._wrapped if isinstance(self.request.user, SimpleLazyObject) else self.request.user
+        user = (
+            self.request.user._wrapped
+            if isinstance(self.request.user, SimpleLazyObject)
+            else self.request.user
+        )
         user_pk = getattr(user, "pk", None)
 
+        if self.request.method == "POST":
+            # В process_post() может измениться self.last_for_triples
+            # – поэтому вызываем его до process_get()
+            context |= self.process_post()
+
+
+        #  Если в кэше есть сохранённое состояние статьи – восстанавливаем
+        #    его (нужно и для GET, и для POST, когда мы уже создали новое
+        #    состояние в пункте 2).
         if user_pk in self.last_for_triples:
+            # process_get() отдаёт «текущий кадр» (предложение, сущности,
+            # триплеты), вообще не трогая verdict'ы, сформированные в post
             context |= self.process_get()
 
         return context
