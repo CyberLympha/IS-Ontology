@@ -21,6 +21,9 @@ from django.utils.functional import SimpleLazyObject
 from django.contrib.auth import get_user_model
 
 
+print("Мой актуальный views.py загружен") #отладка
+
+
 last_for_triples = {}
 
 
@@ -403,6 +406,8 @@ class AddView(TemplateView, TemplatePostViewMixin):
         """
         # базовый контекст из TemplateView
         context = super().get_context_data(**kwargs)
+
+        print("🔔 DEBUG: AddView.get_context_data called") #отладка
 
         # + базовые данные, которые нужны всегда
         context["descriptions"] = [
