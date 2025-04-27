@@ -407,8 +407,6 @@ class AddView(TemplateView, TemplatePostViewMixin):
         # базовый контекст из TemplateView
         context = super().get_context_data(**kwargs)
 
-        print("🔔 DEBUG: AddView.get_context_data called") #отладка
-
         # + базовые данные, которые нужны всегда
         context["descriptions"] = [
             [i["n.url"], i["n.description"]]
@@ -505,7 +503,8 @@ class AddView(TemplateView, TemplatePostViewMixin):
             dict: Контекст с результатами обработки для отображения в шаблоне.
         """
         from django.utils.functional import SimpleLazyObject
- 
+
+        print("🚀 Получен POST запрос:", self.request.POST)
         print("🔎 DEBUG:: request.POST =", dict(self.request.POST))  #отладочный принт
         print("DEBUG:: POST keys =", list(self.request.POST.keys())) #отладочный принт  
 
@@ -611,6 +610,8 @@ class AddView(TemplateView, TemplatePostViewMixin):
                 "sent_len": len(sents),
                 "triples": nm.Triple.get_by_sent(source, sents[sent_index]),
             }
+
+        print("🚀 Контекст перед отдачей:", result)  #отладка
 
         return result
 
