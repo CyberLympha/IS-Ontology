@@ -1,6 +1,4 @@
-from django.db import models  # type: ignore
-
-# Create your models here.
+from django.db import models  
 
 class Source(models.Model):
     """
